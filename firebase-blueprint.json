@@ -1,0 +1,194 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing public identifier, display name, and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address.",
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name.",
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "Timestamp when the user registered."
+        },
+        "updatedAt": {
+          "type": "integer",
+          "description": "Timestamp when profile was last updated."
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat session with TONY AI owned by an authenticated user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique conversation ID.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the owner who started this conversation.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Summary title of the conversation.",
+          "maxLength": 200
+        },
+        "tone": {
+          "type": "string",
+          "description": "Selected personality tone.",
+          "enum": ["balanced", "direct", "sheng", "swahili"]
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "Creation timestamp in milliseconds."
+        },
+        "updatedAt": {
+          "type": "integer",
+          "description": "Last updated timestamp in milliseconds."
+        }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual chat message within a conversation.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message ID.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "conversationId": {
+          "type": "string",
+          "description": "Parent conversation ID.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the user who owns this chat.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "role": {
+          "type": "string",
+          "description": "Message author role.",
+          "enum": ["user", "assistant", "system"]
+        },
+        "content": {
+          "type": "string",
+          "description": "Text body of the message.",
+          "maxLength": 15000
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Message creation timestamp."
+        },
+        "language": {
+          "type": "string",
+          "description": "Detected language (English, Swahili, Sheng).",
+          "enum": ["en", "sw", "sheng"]
+        },
+        "tokensUsed": {
+          "type": "integer",
+          "description": "Estimated tokens consumed."
+        }
+      },
+      "required": ["id", "conversationId", "userId", "role", "content", "timestamp"]
+    },
+    "TrainingItem": {
+      "title": "TrainingItem",
+      "description": "Custom training memory, knowledge, slang glossary, or rule taught to TONY AI by user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique training ID.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner UID.",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Category of training item.",
+          "enum": ["fact", "qa", "vocabulary", "rule"]
+        },
+        "title": {
+          "type": "string",
+          "description": "Short label or subject.",
+          "maxLength": 200
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Input question, trigger phrase, or term.",
+          "maxLength": 2000
+        },
+        "response": {
+          "type": "string",
+          "description": "Expected response, definition, rule, or taught fact.",
+          "maxLength": 5000
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this training item is actively applied in prompts."
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "Creation timestamp."
+        },
+        "updatedAt": {
+          "type": "integer",
+          "description": "Last update timestamp."
+        }
+      },
+      "required": ["id", "userId", "type", "title", "prompt", "response", "enabled", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents keyed by Auth UID."
+    },
+    "/users/{userId}/trainings/{trainingId}": {
+      "schema": "TrainingItem",
+      "description": "Custom training items and knowledge learned by TONY AI for this user."
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "Conversations collection owned by users."
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages subcollection under each conversation."
+    }
+  }
+}

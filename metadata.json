@@ -1,0 +1,6 @@
+{
+  "name": "TONY AI - Mobile Personal AI Assistant",
+  "description": "A smart, friendly, and direct mobile AI assistant supporting English, Kiswahili, and Sheng with real Gemini 3.8 Flash intelligence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
